@@ -1,0 +1,732 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: auto;
+            color: #333;
+        }
+
+        /* Ajout / remplacement de variables par défaut pour cohérence */
+:root {
+	/* Increased bubble size so images are noticeably bigger */
+	--bubble-size: 180px;
+	--offset: 110px; /* ajusté pour correspondre à la nouvelle taille */
+	--connector-color: #999;
+	--center-line-color: #ddd;
+	--padding: 24px;
+	--gap: 24px;
+	--event-width: calc(var(--bubble-size) + 60px);
+	--bg: #f8f9fa;
+}
+
+        html, body {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+}
+
+.timeline-container {
+  min-height: 100vh; /* occupe toute la page */
+  box-sizing: border-box;
+  padding: var(--padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+}
+
+/* Rendre le conteneur responsive et non forcé à une largeur minimale fixe */
+.timeline-container {
+	/* ...existing code... */
+	/* remplacé : suppression de min-width: 1200px; */
+	max-width: 1200px;
+	width: 100%;
+	min-width: auto;
+	padding: 40px 24px;
+	position: relative; /* pour que .timeline::before soit relatif à ce conteneur si nécessaire */
+	box-sizing: border-box;
+}
+
+        .timeline-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            min-width: 1200px;
+            border: 1px solid #e9ecef;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c2c2c;
+            margin-bottom: 60px;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: -1px;
+        }
+
+        .timeline {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--gap);
+  padding: var(--padding) 0;
+  align-items: center;
+  justify-content: flex-start;
+  /* par défaut on permet l'emballage si peu d'éléments */
+  flex-wrap: wrap;
+  overflow: hidden; /* on cachera le débordement sauf si horizontal */
+}
+
+/* Quand il y a plus de 6 éléments on ajoute la classe horizontal via JS */
+.timeline.horizontal {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  /* petits ajustements visuels */
+	padding-bottom: 16px;
+}
+
+/* barres de scroll custom (optionnelles, legères) */
+.timeline.horizontal::-webkit-scrollbar {
+	height: 8px;
+}
+.timeline.horizontal::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.12);
+	border-radius: 999px;
+}
+
+        /* Ligne centrale relative à la timeline */
+.timeline::before {
+	/* ...existing code... */
+	/* s'assure d'être positionnée dans la timeline plutôt que sur la page entière */
+	left: 0;
+	right: 0;
+	top: 50%;
+	position: absolute;
+	height: 4px;
+	background: var(--center-line-color);
+	z-index: 1;
+	border-radius: 2px;
+}
+
+        .event {
+  flex: 0 0 var(--event-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+/* Événements : ne pas forcer flex:1 et enlever min-width limitant la responsivité */
+.event {
+	/* ...existing code... */
+	/* remplacé : flex adapté pour contenu scrollable / responsive */
+	flex: 0 0 var(--event-width);
+	min-width: auto; /* permettre de réduire sur petits écrans via media queries */
+	margin: 0.6rem;
+	opacity: 0;
+	transform: translateY(50px);
+	animation: fadeInUp 0.6s ease forwards;
+	z-index: 2;
+	position: relative;
+}
+
+        .event:nth-child(1) { animation-delay: 0.2s; }
+        .event:nth-child(2) { animation-delay: 0.4s; }
+        .event:nth-child(3) { animation-delay: 0.6s; }
+        .event:nth-child(4) { animation-delay: 0.8s; }
+        .event:nth-child(5) { animation-delay: 1.0s; }
+        .event:nth-child(6) { animation-delay: 1.2s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .event.top .event-content {
+            margin-bottom: 40px;
+            order: 1;
+        }
+
+        .event.top .event-bubble {
+            order: 2;
+        }
+
+        .event.bottom .event-content {
+            margin-top: 40px;
+            order: 2;
+        }
+
+        .event.bottom .event-bubble {
+            order: 1;
+        }
+
+        .event-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 200px;
+            text-align: center;
+            border: 1px solid #f1f3f5;
+        }
+
+        .event-content:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 40px rgba(108, 92, 231, 0.15);
+            width: 220px;
+            border-color: #a29bfe;
+        }
+
+        /* remplace .event-bubble (div) par img.event-bubble */
+        .event-bubble {
+		/* utilise la variable pour une taille cohérente et responsive */
+		width: var(--bubble-size);
+		height: var(--bubble-size);
+		object-fit: cover;
+		border-radius: 12px;
+		cursor: pointer;
+		border: 3px solid rgba(255,255,255,0.9);
+		box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+		transition: transform 150ms ease, box-shadow 150ms ease;
+		display: block;
+		z-index: 10;
+		position: relative;
+	}
+
+        .event-bubble:active,
+        .event-bubble:focus {
+            transform: translateY(1px) scale(0.99);
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+        }
+
+        .event-bubble:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Titre plus petit par rapport à l'image */
+        .event-title {
+	font-size: 0.7rem; /* réduit */
+	margin-top: 0.5rem;
+	text-align: center;
+	font-weight: 600;
+	color: #222;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	/* largeur liée à la taille de la bulle pour garder proportion */
+	max-width: calc(var(--bubble-size) + 20px);
+}
+
+        /* Date et résumé moins visibles (optionnel) */
+        .event-date,
+        .event-summary {
+            font-size: 0.72rem;
+            color: #666;
+            margin-top: 0.25rem;
+            text-align: center;
+            /* Si vous voulez complètement masquer date/summary, décommentez la ligne suivante */
+            /* display: none; */
+        }
+
+        /* Connecteurs entre bulles et contenu
+           Remplacé pour retirer les barres verticales (masque les pseudo-éléments) */
+.event::after,
+.event.top::after,
+.event.bottom::after {
+    display: none;
+    content: none;
+}
+
+        /* Modal pour les détails */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 99999; /* très élevé pour toujours passer au-dessus */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* classe utilitaire : JS peut ajouter .show à la modal au lieu d'utiliser display:inline styles */
+.modal.show {
+	display: flex;
+}
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.4s ease;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 95%;
+            max-width: 680px;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+            z-index: 2;
+        }
+
+        .close:hover {
+            color: #ff6b6b;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 15px;
+            padding-right: 40px;
+        }
+
+        .modal-date {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .modal-description {
+            line-height: 1.7;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1300px) {
+	.timeline-container {
+		max-width: 100%;
+		min-width: auto;
+		padding: 28px 18px;
+	}
+	.event-content {
+		/* adapte la largeur du contenu en fonction de la bulle */
+		width: calc(var(--bubble-size) + 20px);
+	}
+}
+
+        @media (max-width: 900px) {
+	.timeline {
+		/* Forcer le déroulement horizontal pour conserver lisibilité */
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		padding: 28px 0;
+	}
+	.event {
+		flex: 0 0 calc(var(--bubble-size) * 1.2);
+	}
+	.event-content {
+		width: calc(var(--bubble-size) * 1.2 + 8px);
+	}
+}
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .timeline-container {
+                min-width: 800px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+                margin-bottom: 40px;
+            }
+            
+            .timeline {
+                padding: 80px 0;
+            }
+            
+            .event-content {
+		width: calc(var(--bubble-size) * 0.6 + 20px);
+		padding: 12px;
+	}
+	
+	.event-content:hover {
+		width: calc(var(--bubble-size) * 0.6 + 40px);
+	}
+	
+	.event-title {
+		font-size: 0.9em;
+	}
+	
+	.event-summary, .event-date {
+		font-size: 0.75em;
+	}
+	
+	.modal-content {
+		width: 95%;
+		margin: 10% auto;
+		padding: 20px;
+	}
+
+	.event-bubble {
+		width: calc(var(--bubble-size) * 0.5);
+		height: calc(var(--bubble-size) * 0.5);
+	}
+}
+
+        @media (max-width: 480px) {
+	.event-bubble {
+		width: 110px;
+		height: 110px;
+	}
+	.event-title {
+		max-width: 110px;
+		font-size: 0.78rem;
+	}
+	.modal-content {
+		max-height: 86vh;
+		width: 100%;
+		padding: 16px;
+		border-radius: 12px;
+	}
+}
+
+/* Surlignage visuel */
+.event.current .event-bubble {
+	border-color: #22c55e;
+	box-shadow: 0 12px 40px rgba(34,197,94,0.18);
+	transform: scale(1.06);
+}
+
+/* Badge "Actuel" sur l'événement (accessible) */
+.event.current::before {
+	content: "Actuel";
+	position: absolute;
+	top: -12px;
+	right: -6px;
+	background: #16a34a;
+	color: #fff;
+	font-size: 0.65rem;
+	padding: 4px 8px;
+	border-radius: 999px;
+	box-shadow: 0 6px 18px rgba(22,163,74,0.12);
+	z-index: 12;
+}
+
+/* Indicateur visuel pour .event-content afin d'indiquer état non-éditable */
+.event.current .event-content {
+	opacity: 0.98;
+	border-color: rgba(34,197,94,0.12);
+}
+
+/* Éléments passés : tout ce qui est avant l'emplacement courant apparaît en vert */
+.event.past .event-bubble {
+	border-color: #16a34a;
+	box-shadow: 0 8px 28px rgba(16, 185, 129, 0.12);
+	filter: saturate(1.05);
+	transform: scale(1.02);
+}
+
+/* Fond léger pour le contenu des événements passés */
+.event.past .event-content {
+	background: #ecfdf5;
+	border-color: rgba(16,185,129,0.12);
+	color: #065f46;
+}
+
+/* Titre teinté en vert pour les éléments passés */
+.event.past .event-title {
+	color: #065f46;
+}
+
+/* transitions douces */
+.event .event-bubble,
+.event .event-content {
+	transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+/* Centrer la bulle de version sur une ligne entière et l'afficher plus visible */
+.version-event {
+	flex: 0 0 100%;       /* occupe une ligne entière */
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 1rem 0;
+}
+
+/* Taille / forme spécifique pour la bulle de version */
+.version-event .event-bubble {
+	width: 220px;
+	height: 140px;
+	border-radius: 18px;
+	object-fit: contain;
+	box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+	border: 4px solid rgba(255,255,255,0.95);
+	transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* Titre et hashtag visibles et centrés sous la bulle */
+.version-event .event-title {
+	font-size: 1rem;
+	margin-top: 10px;
+	font-weight: 700;
+	white-space: normal;
+}
+
+/* Faire de la version un bloc large et unique */
+.version-event {
+	/* occupe une ligne entière */
+	flex: 0 0 100%;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 1.5rem 0;
+	position: relative;
+	z-index: 2;
+}
+
+/* Image principale : plein largeur (responsive), très large et haute */
+.version-event .event-bubble {
+	width: 100%;
+	height: auto;
+	max-width: none;          /* aucune limite sur grands écrans */
+	max-height: 520px;       /* limite la hauteur pour conserver ratio */
+	border-radius: 12px;     /* légèrement arrondi */
+	object-fit: cover;
+	box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+	border: 6px solid rgba(255,255,255,0.95);
+	display: block;
+	margin: 0 auto;
+	transition: transform 220ms ease, box-shadow 220ms ease;
+	cursor: pointer;
+}
+
+/* Hover plus prononcé pour effet visuel */
+.version-event .event-bubble:hover {
+	transform: translateY(-8px) scale(1.02);
+	box-shadow: 0 30px 100px rgba(0,0,0,0.28);
+}
+
+/* Masquer le texte pour ne montrer que l'image (si souhaité) */
+.version-event .event-content {
+	display: none;
+}
+
+/* Ajustements mobile pour que l'image reste lisible */
+@media (max-width: 900px) {
+	.version-event .event-bubble {
+		max-height: 420px;
+		border-radius: 10px;
+		border-width: 4px;
+	}
+}
+
+@media (max-width: 480px) {
+	.version-event .event-bubble {
+		max-height: 280px;
+		border-radius: 8px;
+	}
+}
+
+/* Faire de la version un bloc plus petit et visible avec overlay */
+.version-event {
+	flex: 0 0 100%;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 1rem 0;
+	position: relative;
+	z-index: 3;
+	padding: 0 16px;
+}
+
+/* Image principale : plus petite, centrée */
+.version-event .event-bubble {
+	width: 100%;
+	height: auto;
+	max-width: 520px;     /* réduit la largeur maximale */
+	max-height: 340px;
+	border-radius: 14px;
+	object-fit: cover;
+	box-shadow: 0 18px 60px rgba(0,0,0,0.18);
+	border: 4px solid rgba(255,255,255,0.9);
+	display: block;
+	margin: 0 auto;
+	transition: transform 180ms ease, box-shadow 180ms ease;
+	cursor: pointer;
+}
+
+/* Overlay centré sur l'image pour afficher V1 et #codebase */
+.version-overlay {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none; /* laisse l'image recevoir le clic */
+	text-align: center;
+	color: #fff;
+	text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+	z-index: 4;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Style du grand "V1" */
+.version-overlay .version-v {
+	font-family: 'Segoe UI', Arial, sans-serif;
+	font-weight: 800;
+	font-size: clamp(28px, 5.2vw, 48px);
+	letter-spacing: -0.5px;
+}
+
+/* Style du hashtag */
+.version-overlay .version-hash {
+	font-family: 'Segoe UI', Arial, sans-serif;
+	font-weight: 600;
+	font-size: clamp(12px, 2.2vw, 16px);
+	opacity: 0.95;
+	margin-top: 6px;
+}
+
+/* Ajustements petits écrans */
+@media (max-width: 900px) {
+	.version-event { flex: 0 0 calc(var(--bubble-size) * 1.4); max-width: calc(var(--bubble-size) * 1.4); }
+	.version-event .event-bubble { max-width: 360px; max-height: 260px; }
+}
+@media (max-width: 480px) {
+	.version-event { flex: 0 0 calc(var(--bubble-size) * 1.2); max-width: calc(var(--bubble-size) * 1.2); }
+	.version-event .event-bubble { max-width: 260px; max-height: 180px; }
+	.version-overlay .version-v { font-size: clamp(20px, 9vw, 34px); }
+	.version-overlay .version-hash { font-size: clamp(10px, 4vw, 14px); }
+}
+
+/* Modal : disposition en grille (texte | image) */
+.modal-content {
+	/* ...existing code... */
+	/* conserver les règles existantes et ajouter un positionnement interne si besoin */
+	box-sizing: border-box;
+}
+
+/* nouvelle grille interne dans #modal-body */
+#modal-body .modal-grid {
+	display: flex;
+	gap: 24px;
+	align-items: stretch;
+	justify-content: space-between;
+}
+
+/* zone texte (garde la largeur variable) */
+#modal-body .modal-main {
+	flex: 1 1 60%;
+	min-width: 240px;
+}
+
+/* zone image à droite */
+#modal-body .modal-side {
+	flex: 0 0 280px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-left: 8px;
+}
+
+/* image #codebase : adapter l'apparence */
+#modal-body .modal-side img#codebase {
+	max-width: 100%;
+	height: auto;
+	border-radius: 12px;
+	/* suppression de l'ombre voulue : none */
+	box-shadow: none;
+	border: 4px solid rgba(255,255,255,0.95);
+	object-fit: cover;
+	display: block;
+}
+
+/* Responsive : empiler contenu + image sous 760px */
+@media (max-width: 760px) {
+	#modal-body .modal-grid {
+		flex-direction: column;
+	}
+	#modal-body .modal-side {
+		flex: 0 0 auto;
+		padding-left: 0;
+		padding-top: 12px;
+	}
+	/* plus d'ombre sur petits écrans : on la retire également */
+	#modal-body .modal-side img#codebase {
+		border-width: 3px;
+		box-shadow: none;
+		max-height: 36vh;
+		width: auto;
+	}
+}

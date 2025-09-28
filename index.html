@@ -3,504 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline Interactive Horizontale</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            min-height: 100vh;
-            padding: 40px 20px;
-            overflow-x: auto;
-            color: #333;
-        }
-
-        .timeline-container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
-            min-width: 1200px;
-            border: 1px solid #e9ecef;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c2c2c;
-            margin-bottom: 60px;
-            font-size: 2.5em;
-            font-weight: 300;
-            letter-spacing: -1px;
-        }
-
-        .timeline {
-            position: relative;
-            padding: 100px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            min-height: 400px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 5%;
-            right: 5%;
-            height: 2px;
-            background: linear-gradient(to right, #6c5ce7, #a29bfe, #6c5ce7);
-            transform: translateY(-50%);
-            border-radius: 1px;
-            z-index: 1;
-        }
-
-        .event {
-            position: relative;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            opacity: 0;
-            transform: translateY(50px);
-            animation: fadeInUp 0.6s ease forwards;
-            z-index: 2;
-        }
-
-        .event:nth-child(1) { animation-delay: 0.2s; }
-        .event:nth-child(2) { animation-delay: 0.4s; }
-        .event:nth-child(3) { animation-delay: 0.6s; }
-        .event:nth-child(4) { animation-delay: 0.8s; }
-        .event:nth-child(5) { animation-delay: 1.0s; }
-        .event:nth-child(6) { animation-delay: 1.2s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .event.top .event-content {
-            margin-bottom: 40px;
-            order: 1;
-        }
-
-        .event.top .event-bubble {
-            order: 2;
-        }
-
-        .event.bottom .event-content {
-            margin-top: 40px;
-            order: 2;
-        }
-
-        .event.bottom .event-bubble {
-            order: 1;
-        }
-
-        .event-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 200px;
-            text-align: center;
-            border: 1px solid #f1f3f5;
-        }
-
-        .event-content:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 40px rgba(108, 92, 231, 0.15);
-            width: 220px;
-            border-color: #a29bfe;
-        }
-
-        .event-bubble {
-            width: 20px;
-            height: 20px;
-            background: #6c5ce7;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .event-bubble:hover {
-            transform: scale(1.3);
-            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.3);
-            background: #a29bfe;
-        }
-
-        .event-date {
-            font-size: 0.85em;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .event-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .event-summary {
-            color: #666;
-            line-height: 1.4;
-            font-size: 0.9em;
-        }
-
-        /* Connecteurs entre bulles et contenu */
-        .event::after {
-            content: '';
-            position: absolute;
-            width: 2px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.6);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1;
-        }
-
-        .event.top::after {
-            bottom: 52px;
-        }
-
-        .event.bottom::after {
-            top: 52px;
-        }
-
-        /* Modal pour les détails */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.4s ease;
-            position: relative;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-            transition: color 0.3s;
-        }
-
-        .close:hover {
-            color: #ff6b6b;
-        }
-
-        .modal-title {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 15px;
-            padding-right: 40px;
-        }
-
-        .modal-date {
-            color: #ff6b6b;
-            font-weight: 600;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        .modal-description {
-            line-height: 1.7;
-            color: #555;
-            font-size: 1.1em;
-        }
-
-        /* Scroll indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9em;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        /* Responsive */
-        @media (max-width: 1300px) {
-            .timeline-container {
-                min-width: 1000px;
-            }
-            
-            .event-content {
-                width: 160px;
-                padding: 15px;
-            }
-            
-            .event-content:hover {
-                width: 180px;
-            }
-            
-            .event-title {
-                font-size: 1em;
-            }
-            
-            .event-summary {
-                font-size: 0.8em;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 10px;
-            }
-            
-            .timeline-container {
-                min-width: 800px;
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-                margin-bottom: 40px;
-            }
-            
-            .timeline {
-                padding: 80px 0;
-            }
-            
-            .event-content {
-                width: 140px;
-                padding: 12px;
-            }
-            
-            .event-content:hover {
-                width: 160px;
-            }
-            
-            .event-title {
-                font-size: 0.9em;
-            }
-            
-            .event-summary, .event-date {
-                font-size: 0.75em;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
-                padding: 20px;
-            }
-        }
-    </style>
+    <title>Feuille de route de Victoria</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="timeline-container">
-        <h1>Timeline Historique Interactive</h1>
+    <div id="timelineContainer" class="timeline-container">
+        <h1>Feuille de route de Victoria</h1>
         
         <div class="timeline">
-            <div class="event top">
-                <div class="event-content" onclick="openModal('event1')">
-                    <div class="event-date">15 juillet 1789</div>
-                    <div class="event-title">Prise de la Bastille</div>
-                    <div class="event-summary">Début symbolique de la Révolution française</div>
+            <div class="event" data-event-id="event1">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Octobre 2025</div>
+                    <div class="event-title">Coffre fort</div>
+                     <div class="event-summary">  </div>
                 </div>
-                <div class="event-bubble" onclick="openModal('event1')"></div>
+                <!-- Ajout de role et tabindex pour accessibilité; le style (taille) est géré dans style.css -->
+                <img class="event-bubble" src="img/coffre fort.png" alt="Coffre fort" loading="lazy" role="button" tabindex="0">
             </div>
 
-            <div class="event bottom">
-                <div class="event-content" onclick="openModal('event2')">
-                    <div class="event-date">12 octobre 1492</div>
-                    <div class="event-title">Découverte de l'Amérique</div>
-                    <div class="event-summary">Christophe Colomb atteint les Amériques</div>
-                </div>
-                <div class="event-bubble" onclick="openModal('event2')"></div>
-            </div>
-
-            <div class="event top">
-                <div class="event-content" onclick="openModal('event3')">
-                    <div class="event-date">20 juillet 1969</div>
-                    <div class="event-title">Premier pas sur la Lune</div>
-                    <div class="event-summary">Neil Armstrong marche sur la Lune</div>
-                </div>
-                <div class="event-bubble" onclick="openModal('event3')"></div>
-            </div>
-
-            <div class="event bottom">
-                <div class="event-content" onclick="openModal('event4')">
-                    <div class="event-date">9 novembre 1989</div>
-                    <div class="event-title">Chute du Mur de Berlin</div>
-                    <div class="event-summary">Symbole de la fin de la Guerre froide</div>
-                </div>
-                <div class="event-bubble" onclick="openModal('event4')"></div>
-            </div>
-
-            <div class="event top">
-                <div class="event-content" onclick="openModal('event5')">
-                    <div class="event-date">6 août 1991</div>
+            <div class="event" data-event-id="event2">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Octobre 2025</div>
                     <div class="event-title">Naissance du Web</div>
-                    <div class="event-summary">Tim Berners-Lee lance le premier site web</div>
+                    <div class="event-summary"></div>
                 </div>
-                <div class="event-bubble" onclick="openModal('event5')"></div>
+                <img class="event-bubble" src="img/issues_maker.png" alt="Naissance du Web" loading="lazy" role="button" tabindex="0">
             </div>
 
-            <div class="event bottom">
-                <div class="event-content" onclick="openModal('event6')">
-                    <div class="event-date">11 septembre 2001</div>
-                    <div class="event-title">Attentats du 11 septembre</div>
-                    <div class="event-summary">Événement marquant du XXIe siècle</div>
+
+            <div class="event" data-event-id="event3">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Octobre 2025</div>
+                    <div class="event-title">Découverte de l'Amérique</div>
+                    <div class="event-summary"></div>
                 </div>
-                <div class="event-bubble" onclick="openModal('event6')"></div>
+                <img class="event-bubble" src="img/parole.png" alt="Découverte de l'Amérique" loading="lazy" role="button" tabindex="0">
             </div>
+
+            <div class="event" data-event-id="event4">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Octobre 2025</div>
+                    <div class="event-title">Attentats du 11 septembre</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/veilles_info.png" alt="11 septembre 2001" loading="lazy" role="button" tabindex="0">
+            </div>
+
+            <div class="event" data-event-id="event5">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Octobre 2025</div>
+                    <div class="event-title">Premier pas sur la Lune</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/rag.png" alt="Premier pas sur la Lune" loading="lazy" role="button" tabindex="0">
+            </div>
+
+            <div class="event" data-event-id="event6">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Novembre 2025</div>
+                    <div class="event-title">Chute du Mur de Berlin</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/memoire.png" alt="Chute du Mur de Berlin" loading="lazy" role="button" tabindex="0">
+            </div>
+
+            <div class="event" data-event-id="event7">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Decembre 2025</div>
+                    <div class="event-title">Attentats du 11 septembre</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/trieur_image.png" alt="11 septembre 2001" loading="lazy" role="button" tabindex="0">
+            </div>
+
+            <div class="event" data-event-id="event8">
+                <div class="event-content" role="button" tabindex="0">
+                    <div class="event-date">Janvier 2026</div>
+                    <div class="event-title">Attentats du 11 septembre</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/paint.png" alt="11 septembre 2001" loading="lazy" role="button" tabindex="0">
+            </div>
+            
+            <!-- Bulle de version : image jeux.png + overlay visible (ne bloque pas la suite) -->
+            <div class="event version-event" data-event-id="version" role="button" tabindex="0" aria-label="Version V1 codebase">
+                <div class="event-content" aria-hidden="true">
+                    <div class="event-date">Version</div>
+                    <div class="event-title">V 1.0</div>
+                    <div class="event-summary"></div>
+                </div>
+                <img class="event-bubble" src="img/jeux.png" alt="Bannière version V1" loading="lazy" role="img" tabindex="-1">
+            </div>  
+
         </div>
         
         <div class="scroll-indicator">← Faites défiler horizontalement si nécessaire →</div>
     </div>
 
     <!-- Modal -->
-    <div id="eventModal" class="modal">
+    <div id="eventModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <button class="close" aria-label="Fermer la fenêtre" type="button">&times;</button>
             <div id="modal-body">
                 <!-- Le contenu sera injecté ici -->
             </div>
         </div>
     </div>
 
-    <script>
-        // Données des événements
-        const events = {
-            event1: {
-                title: "Prise de la Bastille",
-                date: "15 juillet 1789",
-                description: "La prise de la Bastille est un événement majeur de la Révolution française qui eut lieu le 14 juillet 1789. Cette forteresse royale était devenue le symbole de l'arbitraire royal et de l'Ancien Régime. Sa prise par le peuple parisien marque le début effectif de la Révolution française. Bien que la prison ne contenait que sept détenus, cet acte symbolique représentait la révolte du peuple contre l'oppression. Aujourd'hui, le 14 juillet est célébré comme la fête nationale française."
-            },
-            event2: {
-                title: "Découverte de l'Amérique",
-                date: "12 octobre 1492",
-                description: "Le 12 octobre 1492, Christophe Colomb, navigateur génois au service de la couronne espagnole, atteint les îles des Bahamas, marquant le premier contact documenté entre l'Europe et les Amériques depuis les Vikings. Cette expédition, initialement destinée à trouver une route vers les Indes par l'ouest, a ouvert la voie à l'exploration et à la colonisation européenne du continent américain. Cet événement a eu des conséquences majeures sur l'histoire mondiale, transformant les échanges commerciaux, culturels et démographiques entre les continents."
-            },
-            event3: {
-                title: "Premier pas sur la Lune",
-                date: "20 juillet 1969",
-                description: "Le 20 juillet 1969, à 20h17 UTC, Neil Armstrong devient le premier être humain à poser le pied sur la Lune, suivi 19 minutes plus tard par Buzz Aldrin. Cette mission Apollo 11, dirigée par la NASA, représente l'aboutissement de la course spatiale entre les États-Unis et l'URSS. Les mots historiques de Neil Armstrong 'C'est un petit pas pour l'homme, un grand bond pour l'humanité' résonnent encore aujourd'hui. Cet exploit technologique et humain extraordinaire a démontré que l'humanité pouvait repousser les limites de l'exploration spatiale."
-            },
-            event4: {
-                title: "Chute du Mur de Berlin",
-                date: "9 novembre 1989",
-                description: "Le 9 novembre 1989, le mur de Berlin, symbole de la division de l'Allemagne et de l'Europe durant la Guerre froide, tombe sous la pression populaire. Construit en 1961 par le régime est-allemand pour empêcher ses citoyens de fuir vers l'Ouest, ce mur de 155 km séparait Berlin-Est de Berlin-Ouest. Sa chute marque la fin symbolique de la Guerre froide et ouvre la voie à la réunification allemande en 1990. Cet événement historique représente la victoire de la liberté sur l'oppression et l'espoir d'une Europe réconciliée."
-            },
-            event5: {
-                title: "Naissance du Web",
-                date: "6 août 1991",
-                description: "Le 6 août 1991, Tim Berners-Lee, informaticien britannique travaillant au CERN, publie le premier site web de l'histoire. Cette page web, accessible à l'adresse info.cern.ch, expliquait le concept du World Wide Web et donnait des instructions sur l'utilisation des navigateurs et la création de sites web. Cette invention révolutionnaire a transformé la communication, l'accès à l'information et le commerce mondial. Le Web est devenu un outil indispensable qui connecte aujourd'hui des milliards de personnes à travers le monde."
-            },
-            event6: {
-                title: "Attentats du 11 septembre",
-                date: "11 septembre 2001",
-                description: "Le 11 septembre 2001, une série d'attentats terroristes coordonnés frappe les États-Unis. Quatre avions de ligne sont détournés par des membres du réseau terroriste Al-Qaïda. Deux avions percutent les tours jumelles du World Trade Center à New York, un troisième frappe le Pentagone à Washington, et le quatrième s'écrase en Pennsylvanie. Ces attentats, qui ont fait près de 3 000 victimes, ont profondément marqué le début du XXIe siècle et ont redéfini les politiques de sécurité mondiale et la lutte contre le terrorisme international."
-            }
-        };
-
-        function openModal(eventId) {
-            const modal = document.getElementById('eventModal');
-            const modalBody = document.getElementById('modal-body');
-            const event = events[eventId];
-
-            modalBody.innerHTML = `
-                <h2 class="modal-title">${event.title}</h2>
-                <p class="modal-date">${event.date}</p>
-                <p class="modal-description">${event.description}</p>
-            `;
-
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('eventModal');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        // Fermer la modal en cliquant à l'extérieur
-        window.onclick = function(event) {
-            const modal = document.getElementById('eventModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
-        // Fermer avec la touche Échap
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        // Animation des bulles au survol et couleurs
-        document.addEventListener('DOMContentLoaded', function() {
-            const bubbles = document.querySelectorAll('.event-bubble');
-            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
-            
-            bubbles.forEach((bubble, index) => {
-                bubble.style.backgroundColor = colors[index % colors.length];
-                
-                bubble.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.4) rotate(360deg)';
-                    this.style.transition = 'all 0.6s ease';
-                });
-                
-                bubble.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1) rotate(0deg)';
-                });
-            });
-        });
-    </script>
+    <!-- Ajout du fichier JavaScript -->
+    <script src="scripts.js"></script>
 </body>
 </html>
