@@ -1,46 +1,46 @@
 // Données des événements
         const eventsData = {
-            event1: {
-                title: "Coffre fort",
-                date: "Octobre 2025",
-                description: ""
-            },
-            event2: {
-                title: "Issues Maker",
-                date: "Octobre 2025",
-                description: ""
-            },
-            event3: {
-                title: "Parole",
-                date: "Octobre 2025",
-                description: ""
-            },
-            event4: {
-                title: "Veilles Informatique",
-                date: "Octobre 2025",
-                description: ""
-            },
-            event5: {
-                title: "RAG",
-                date: "Octobre 2025",
-                description: ""
-            },
-            event6: {
-                title: "Mémoire",
-                date: "Novembre 2025",
-                description: ""
-            },
-            event7: {
-                title: "Trieur d'images",
-                date: "Decembre 2025",
-                description: ""
-            },
-            event8: {
-                title: "Painture",
-                date: "Janvier 2026",
-                description: ""
-            }
-        };
+    event1: {
+        title: "Coffre-fort",
+        date: "Octobre 2025",
+        description: "Permet de conserver mots de passe et fichiers en toute sécurité dans un coffre numérique."
+    },
+    event2: {
+        title: "Issues Maker",
+        date: "Octobre 2025",
+        description: "Simplifie la création et la gestion d’issues avec une intégration directe à GitHub."
+    },
+    event3: {
+        title: "Parole",
+        date: "Octobre 2025",
+        description: "Ajoute des capacités vocales : synthèse et reconnaissance vocale pour interagir à la voix."
+    },
+    event4: {
+        title: "Veille Informatique",
+        date: "Octobre 2025",
+        description: "Plugin dédié à l’organisation, l’agrégation et le suivi de la veille technologique."
+    },
+    event5: {
+        title: "RAG",
+        date: "Octobre 2025",
+        description: "Assistant combinant récupération d’informations et génération automatisée de réponses."
+    },
+    event6: {
+        title: "Mémoire",
+        date: "Novembre 2025",
+        description: "Fournit une mémoire à long terme pour conserver et retrouver des informations persistantes."
+    },
+    event7: {
+        title: "Trieur d’images",
+        date: "Décembre 2025",
+        description: "Trie automatiquement les images en dossiers grâce à un modèle d’apprentissage entraîné."
+    },
+    event8: {
+        title: "Painture",
+        date: "Janvier 2026",
+        description: "Module de dessin pour créer formes, croquis et éléments graphiques simples."
+    }
+};
 
         // Remplacement des fonctions openModal / closeModal pour utilisation cohérente de .show et aria-hidden
         function openModal(eventId) {
